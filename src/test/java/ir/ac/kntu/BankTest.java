@@ -65,8 +65,13 @@ public class BankTest {
     public void deposit() throws NoSuchMethodException,
             InvocationTargetException, IllegalAccessException {
         Account acc2 = bank.findAccountByNumber(ID2);
-        boolean test1 = bank.deposit(ID2, 100);
-        boolean test2 = !bank.deposit(12341L, 200);
+        final Method DEPOSIT = Bank.class
+                .getDeclaredMethod("deposit", long.class, double.class);
+        DEPOSIT.setAccessible(true);
+        Boolean test1 = (Boolean) DEPOSIT.invoke(bank, ID2, 100);
+
+        Boolean test2 = !(Boolean) DEPOSIT.invoke(bank, 12341L, 200);
+        DEPOSIT.setAccessible(false);
         assertEquals((double) acc2.getClass().
                 getDeclaredMethod("getBalance").invoke(acc2), (BAL2 + 100));
         assertTrue(test1 && test2);
@@ -76,8 +81,11 @@ public class BankTest {
     public void withdraw() throws NoSuchMethodException,
             InvocationTargetException, IllegalAccessException {
         Account acc4 = bank.findAccountByNumber(ID4);
-        boolean test1 = bank.withdraw(ID4, 100);
-        boolean test2 = !bank.withdraw(12141L, 120);
+        final Method WITHDRAW = Bank.class.getDeclaredMethod("withdraw", long.class, double.class);
+        WITHDRAW.setAccessible(true);
+        boolean test1 = (Boolean) WITHDRAW.invoke(bank, ID4, 100);
+        boolean test2 = !(Boolean) WITHDRAW.invoke(bank, 12141L, 120);
+        WITHDRAW.setAccessible(false);
         assertEquals((double) acc4.getClass().getDeclaredMethod("getBalance")
                 .invoke(acc4), (BAL4 - 100));
         assertTrue(test1 && test2);
